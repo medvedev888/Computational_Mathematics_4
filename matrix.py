@@ -11,6 +11,7 @@ def solve2(A, B):
     # Подстановка B в первый и второй столбцы
     det1 = calc_det2([[B[r], A[r][1]] for r in range(2)])
     det2 = calc_det2([[A[r][0], B[r]] for r in range(2)])
+    # print(A, det, det1, det2)
     return det1/det, det2/det
 
 
@@ -58,6 +59,7 @@ def solve_sle(A, B, n):
     """Выбор метода решения СЛАУ по размерности n"""
     if n == 2:
         return solve2(A, B)
+        # return solve2(A, B)
     elif n == 3:
         return solve3(A, B)
     elif n == 4:

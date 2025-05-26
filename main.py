@@ -11,6 +11,11 @@ from matrix import solve_sle
 # Линейная аппроксимация: модель вида y = a + b * x
 # xs, ys – списки входных данных; n – количество точек.
 def linear_approximation(xs, ys, n):
+
+    if all(y == ys[0] for y in ys):
+        const_y = ys[0]
+        return lambda xi: const_y, 0, const_y
+
     # Вычисляем суммы для нормальных уравнений:
     # sx = Σ x_i, sxx = Σ x_i^2, sy = Σ y_i, sxy = Σ x_i * y_i
     sx = sum(xs)
@@ -116,11 +121,15 @@ def compute_pearson_correlation(x, y, n):
         sum((xi - mean_x) ** 2 for xi in x) *
         sum((yi - mean_y) ** 2 for yi in y)
     )
+    if den == 0:
+        # Если нет вариации по x или y — корреляция не определена
+        # (когда в одной переменной нет изменений — линейная связь бессмысленна)
+        return 0
     return num / den
 
 
 def compute_mean_squared_error(x, y, fi, n):
-    """Среднеквадратичное отклонение ошибок RMSE"""
+    """Среднеквадратичное отклонение RMSE"""
     return sqrt(sum((fi(xi) - yi) ** 2 for xi, yi in zip(x, y)) / n)
 
 
@@ -134,6 +143,14 @@ def compute_coefficient_of_determination(xs, ys, fi, n):
     mean_pred = sum(fi(xi) for xi in xs) / n
     ss_res = sum((yi - fi(xi)) ** 2 for xi, yi in zip(xs, ys))
     ss_tot = sum((yi - mean_pred) ** 2 for yi in ys)
+
+    if ss_tot == 0:
+        # Все значения y одинаковые
+        if ss_res == 0:
+            return 1.0  # Идеальное совпадение: прямая точно совпала с y
+        else:
+            return 0.0  # Прямая не совпадает, но дисперсии нет
+
     return 1 - ss_res / ss_tot
 
 # ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
